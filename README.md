@@ -2,7 +2,7 @@
 
 QuickPoll is a simple web application where registered users will be able to create multiple-choice polls, share them with others, and view the results.
 
-This project is being built for Engineering Design 2 using AI-assisted development. It is currently in early development, with a React/Vite frontend, Supabase authentication, and an initial Supabase database schema.
+This project is being built for Engineering Design 2 using AI-assisted development. It is currently in early development, with a React/Vite frontend, Supabase authentication, and authenticated poll management.
 
 ## Technology Stack
 
@@ -53,7 +53,7 @@ npm run build
 
 ## Supabase
 
-Supabase provides the PostgreSQL database and authentication for QuickPoll. Phase 3 connects the React app to Supabase Auth for registration, login, logout, persistent sessions, and a simple authenticated dashboard placeholder.
+Supabase provides the PostgreSQL database and authentication for QuickPoll. The React app uses Supabase Auth for registration, login, logout, persistent sessions, and authenticated poll management.
 
 The migrations are located at:
 
@@ -73,6 +73,21 @@ The second migration creates a trigger that automatically adds a `profiles` row 
 
 Do not commit real Supabase credentials or local `.env` files to the repository. `.env.example` should contain placeholders only.
 
+## Current Features
+
+- Register, log in, and log out with Supabase Auth
+- Restore an existing authenticated session on page load
+- Automatically create a profile row when a user signs up
+- Show a dashboard listing polls owned by the current user
+- Create draft polls with one question and 2-6 answer options
+- View poll details and ordered answer options
+- Edit draft poll text and answer options
+- Delete polls after confirmation
+
+Polls remain drafts and unpublished for now. Public sharing, public voting, and results are planned for later phases.
+
+Note: Phase 4 edits poll options by deleting and recreating option rows. This is acceptable before votes exist, but future phases may need to restrict option editing for published polls or polls that already have responses.
+
 ## Development Status
 
-QuickPoll currently supports registration, login, logout, persistent Supabase Auth sessions, automatic profile creation, and a basic authenticated dashboard placeholder. Poll creation, voting, results, and deployment will be added in later phases.
+QuickPoll currently supports registration, login, logout, persistent Supabase Auth sessions, automatic profile creation, and authenticated poll CRUD. Public sharing, voting, results, and deployment will be added in later phases.
