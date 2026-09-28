@@ -1,14 +1,22 @@
-.home {
+.app-shell {
   display: flex;
   min-height: 100vh;
   align-items: center;
   justify-content: center;
+  gap: 2rem;
   padding: 2rem;
+  background:
+    linear-gradient(135deg, rgba(64, 145, 108, 0.12), transparent 38%),
+    #f7fbff;
+}
+
+.app-shell:not(.dashboard) {
+  flex-wrap: wrap;
 }
 
 .intro {
   max-width: 42rem;
-  text-align: center;
+  flex: 1 1 24rem;
 }
 
 .eyebrow {
@@ -24,4 +32,178 @@
   margin: 0;
   color: #4f5f6f;
   font-size: 1.25rem;
+}
+
+.auth-panel,
+.dashboard-card,
+.config-warning {
+  width: min(100%, 26rem);
+  border: 1px solid #d9e2ec;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(16, 42, 67, 0.08);
+}
+
+.auth-panel,
+.dashboard-card {
+  padding: 1.5rem;
+}
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.auth-tabs button,
+.primary-button,
+.secondary-button {
+  min-height: 2.75rem;
+  border: 1px solid #bcccdc;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-tabs button {
+  background: #f0f4f8;
+  color: #334e68;
+}
+
+.auth-tabs button.active,
+.primary-button {
+  border-color: #2f855a;
+  background: #2f855a;
+  color: #ffffff;
+}
+
+.auth-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 0.4rem;
+  color: #334e68;
+  font-weight: 700;
+}
+
+.auth-form input {
+  width: 100%;
+  border: 1px solid #bcccdc;
+  border-radius: 6px;
+  padding: 0.75rem;
+  color: #102a43;
+  font: inherit;
+}
+
+.auth-form input:focus {
+  border-color: #2f855a;
+  outline: 3px solid rgba(47, 133, 90, 0.16);
+}
+
+.primary-button:disabled,
+.secondary-button:disabled,
+.auth-form input:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.secondary-button {
+  width: 100%;
+  background: #ffffff;
+  color: #2f855a;
+}
+
+.form-message,
+.placeholder-message {
+  margin: 0;
+  border-radius: 6px;
+  padding: 0.75rem;
+}
+
+.form-message.error {
+  border: 1px solid #f5c2c7;
+  background: #fff5f5;
+  color: #842029;
+}
+
+.form-message.success {
+  border: 1px solid #badbcc;
+  background: #f0fff4;
+  color: #0f5132;
+}
+
+.config-warning {
+  flex-basis: 100%;
+  max-width: 42rem;
+  padding: 1rem;
+}
+
+.config-warning h2 {
+  margin: 0 0 0.5rem;
+  color: #102a43;
+  font-size: 1.1rem;
+}
+
+.config-warning p {
+  margin: 0;
+  color: #4f5f6f;
+}
+
+.dashboard {
+  text-align: center;
+}
+
+.dashboard-card {
+  width: min(100%, 34rem);
+}
+
+.dashboard-card h1 {
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+}
+
+.account-details {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.account-details p {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  border: 1px solid #d9e2ec;
+  border-radius: 6px;
+  padding: 0.8rem;
+  color: #102a43;
+  overflow-wrap: anywhere;
+}
+
+.account-details span {
+  color: #627d98;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.placeholder-message {
+  margin: 1.5rem 0;
+  background: #f0f4f8;
+  color: #334e68;
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    align-items: stretch;
+    padding: 1rem;
+  }
+
+  .intro {
+    text-align: center;
+  }
 }

@@ -2,13 +2,14 @@
 
 QuickPoll is a simple web application where registered users will be able to create multiple-choice polls, share them with others, and view the results.
 
-This project is being built for Engineering Design 2 using AI-assisted development. It is currently in early development, with a minimal React/Vite frontend and an initial Supabase database schema.
+This project is being built for Engineering Design 2 using AI-assisted development. It is currently in early development, with a React/Vite frontend, Supabase authentication, and an initial Supabase database schema.
 
 ## Technology Stack
 
 - React
 - Vite
 - JavaScript
+- `@supabase/supabase-js`
 - Supabase PostgreSQL
 - Supabase Auth
 - Netlify (planned deployment)
@@ -20,6 +21,23 @@ Install dependencies:
 ```bash
 npm install
 ```
+
+Create a local environment file:
+
+```bash
+cp .env.example .env
+```
+
+Then fill in the local `.env` file:
+
+```text
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+```
+
+`VITE_SUPABASE_URL` should use the public Supabase project URL. `VITE_SUPABASE_ANON_KEY` should use the public anon/publishable client key.
+
+Never use or expose the Supabase service-role key in the frontend.
 
 Run the development server:
 
@@ -35,30 +53,26 @@ npm run build
 
 ## Supabase
 
-Supabase will provide the PostgreSQL database and authentication for QuickPoll. Phase 2 introduces the database schema only; the React frontend is not connected to Supabase yet.
+Supabase provides the PostgreSQL database and authentication for QuickPoll. Phase 3 connects the React app to Supabase Auth for registration, login, logout, persistent sessions, and a simple authenticated dashboard placeholder.
 
-The initial schema is located at:
+The migrations are located at:
 
 ```text
 supabase/migrations/20260928000000_initial_schema.sql
+supabase/migrations/20260928001000_create_profile_on_signup.sql
 ```
 
-To apply the schema manually:
+To apply the migrations manually:
 
 1. Create or open a Supabase project.
 2. Open the Supabase SQL Editor.
-3. Copy the SQL from `supabase/migrations/20260928000000_initial_schema.sql`.
-4. Run the SQL in the editor.
+3. If the initial schema has not already been applied, copy and run the SQL from `supabase/migrations/20260928000000_initial_schema.sql`.
+4. Copy and run the SQL from `supabase/migrations/20260928001000_create_profile_on_signup.sql`.
 
-Future frontend setup will require environment variables similar to these:
+The second migration creates a trigger that automatically adds a `profiles` row whenever a new Supabase Auth user signs up.
 
-```text
-VITE_SUPABASE_URL=
-VITE_SUPABASE_ANON_KEY=
-```
-
-Do not commit real Supabase credentials or local `.env` files to the repository.
+Do not commit real Supabase credentials or local `.env` files to the repository. `.env.example` should contain placeholders only.
 
 ## Development Status
 
-QuickPoll currently contains a basic placeholder homepage and the initial Supabase database schema. Frontend Supabase integration, authentication screens, poll creation, voting, results, and deployment will be added in later phases.
+QuickPoll currently supports registration, login, logout, persistent Supabase Auth sessions, automatic profile creation, and a basic authenticated dashboard placeholder. Poll creation, voting, results, and deployment will be added in later phases.
