@@ -115,7 +115,8 @@ function PollForm({
         options: values.options.map((option) => option.trim()),
       })
     } catch (submitError) {
-      setError(submitError.message)
+      console.error('Poll save failed:', submitError)
+      setError('The poll could not be saved. Please try again.')
     } finally {
       setIsSaving(false)
     }

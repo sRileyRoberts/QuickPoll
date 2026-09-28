@@ -48,7 +48,8 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
       const userPolls = await getUserPolls(user.id)
       setPolls(userPolls)
     } catch (loadError) {
-      setError(loadError.message)
+      console.error('Poll list loading failed:', loadError)
+      setError('Your polls could not be loaded. Please try again.')
     } finally {
       setIsLoadingPolls(false)
     }
@@ -71,7 +72,8 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
       setView('detail')
       await loadResults(pollId)
     } catch (detailError) {
-      setError(detailError.message)
+      console.error('Poll detail loading failed:', detailError)
+      setError('Poll details could not be loaded. Please try again.')
     } finally {
       setIsLoadingDetail(false)
     }
@@ -138,7 +140,8 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
       setMessage('Poll deleted successfully.')
       await loadPolls()
     } catch (deleteError) {
-      setError(deleteError.message)
+      console.error('Poll deletion failed:', deleteError)
+      setError('The poll could not be deleted. Please try again.')
     } finally {
       setIsDeleting(false)
     }
@@ -167,7 +170,8 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
       await loadResults(selectedPoll.id)
       setMessage('Poll published successfully.')
     } catch (publishError) {
-      setError(publishError.message)
+      console.error('Poll publishing failed:', publishError)
+      setError('The poll could not be published. Please try again.')
     } finally {
       setIsPublishing(false)
     }
@@ -190,7 +194,8 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
       await loadResults(selectedPoll.id)
       setMessage('Poll unpublished successfully.')
     } catch (publishError) {
-      setError(publishError.message)
+      console.error('Poll unpublishing failed:', publishError)
+      setError('The poll could not be unpublished. Please try again.')
     } finally {
       setIsPublishing(false)
     }
@@ -229,7 +234,8 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
       await loadResults(pollId)
       setView('edit')
     } catch (detailError) {
-      setError(detailError.message)
+      console.error('Poll edit loading failed:', detailError)
+      setError('Poll details could not be loaded for editing. Please try again.')
     } finally {
       setIsLoadingDetail(false)
     }
