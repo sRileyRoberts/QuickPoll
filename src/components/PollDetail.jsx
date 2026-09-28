@@ -97,6 +97,10 @@ function PollDetail({
         )}
       </div>
 
+      <p className="placeholder-message">
+        Results will be available in a future phase.
+      </p>
+
       <div className="form-actions">
         <button type="button" className="secondary-button" onClick={onEdit}>
           Edit

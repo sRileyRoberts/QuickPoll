@@ -198,3 +198,16 @@ export async function fetchPublicPoll(pollId) {
     options,
   }
 }
+
+export async function submitVote(pollId, optionId) {
+  const { error } = await supabase
+    .from('votes')
+    .insert({
+      poll_id: pollId,
+      option_id: optionId,
+    })
+
+  if (error) {
+    throw error
+  }
+}

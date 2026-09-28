@@ -87,11 +87,15 @@ Do not commit real Supabase credentials or local `.env` files to the repository.
 - Publish and unpublish polls
 - Generate shareable public links for published polls
 - Open published polls without an account at `/poll/:pollId`
+- Vote on published polls without an account
+- Store submitted votes in Supabase
 
-Public poll pages are read-only in this phase. Voting and results are planned for later phases.
+Public poll pages allow anonymous voting. Results, charts, percentages, and owner result views are planned for later phases.
 
-Note: QuickPoll currently allows editing published polls because voting has not been implemented yet. Phase 4 edits poll options by deleting and recreating option rows. Future phases may need to restrict option editing for published polls or polls that already have responses.
+Anonymous voting currently uses a simple `localStorage` key per poll to reduce repeat votes from the same browser. This is a convenience guard for the class project, not secure anti-cheat. It does not use IP tracking, fingerprinting, CAPTCHA, or voter accounts.
+
+Note: QuickPoll currently allows editing published polls. Phase 4 edits poll options by deleting and recreating option rows. Future phases may need to restrict option editing for published polls or polls that already have responses.
 
 ## Development Status
 
-QuickPoll currently supports registration, login, logout, persistent Supabase Auth sessions, automatic profile creation, authenticated poll CRUD, publishing, and read-only public poll links. Voting, results, and deployment will be added in later phases.
+QuickPoll currently supports registration, login, logout, persistent Supabase Auth sessions, automatic profile creation, authenticated poll CRUD, publishing, public poll links, and anonymous vote submission. Results and deployment will be added in later phases.
