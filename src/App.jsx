@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
+import { Route, Routes } from 'react-router-dom'
 import './App.css'
 import AuthForm from './components/AuthForm'
 import Dashboard from './components/Dashboard'
+import PublicPollPage from './components/PublicPollPage'
 import { supabase, supabaseConfig } from './lib/supabaseClient'
 
-function App() {
+function HomeApp() {
   const [session, setSession] = useState(null)
   const [profile, setProfile] = useState(null)
   const [profileError, setProfileError] = useState('')
@@ -151,6 +153,15 @@ function App() {
 
       <AuthForm isSupabaseConfigured={supabaseConfig.isConfigured} />
     </main>
+  )
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomeApp />} />
+      <Route path="/poll/:pollId" element={<PublicPollPage />} />
+    </Routes>
   )
 }
 

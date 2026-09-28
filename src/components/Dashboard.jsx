@@ -6,6 +6,8 @@ import {
   deletePoll,
   getPollWithOptions,
   getUserPolls,
+  publishPoll,
+  unpublishPoll,
   updatePoll,
 } from '../lib/pollService'
 
@@ -29,6 +31,8 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
   const [isLoadingPolls, setIsLoadingPolls] = useState(true)
   const [isLoadingDetail, setIsLoadingDetail] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isPublishing, setIsPublishing] = useState(false)
+  const [copyMessage, setCopyMessage] = useState('')
 
   const loadPolls = useCallback(async () => {
     setIsLoadingPolls(true)
@@ -110,6 +114,78 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
     }
   }
 
+  async function refreshSelectedPoll(pollId) {
+    const refreshedPoll = await getPollWithOptions(pollId, user.id)
+    setSelectedPoll(refreshedPoll)
+    return refreshedPoll
+  }
+
+  async function handlePublishPoll() {
+    if (!selectedPoll) {
+      return
+    }
+
+    setIsPublishing(true)
+    setError('')
+    setMessage('')
+    setCopyMessage('')
+
+    try {
+      await publishPoll(selectedPoll.id, user.id)
+      await loadPolls()
+      await refreshSelectedPoll(selectedPoll.id)
+      setMessage('Poll published successfully.')
+    } catch (publishError) {
+      setError(publishError.message)
+    } finally {
+      setIsPublishing(false)
+    }
+  }
+
+  async function handleUnpublishPoll() {
+    if (!selectedPoll) {
+      return
+    }
+
+    setIsPublishing(true)
+    setError('')
+    setMessage('')
+    setCopyMessage('')
+
+    try {
+      await unpublishPoll(selectedPoll.id, user.id)
+      await loadPolls()
+      await refreshSelectedPoll(selectedPoll.id)
+      setMessage('Poll unpublished successfully.')
+    } catch (publishError) {
+      setError(publishError.message)
+    } finally {
+      setIsPublishing(false)
+    }
+  }
+
+  async function handleCopyShareLink() {
+    if (!selectedPoll) {
+      return
+    }
+
+    const shareUrl = `${window.location.origin}/poll/${selectedPoll.id}`
+    setCopyMessage('')
+    setError('')
+
+    if (!navigator.clipboard?.writeText) {
+      setCopyMessage('Copy is not available in this browser. You can select and copy the link manually.')
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(shareUrl)
+      setCopyMessage('Share link copied.')
+    } catch {
+      setCopyMessage('Copy failed. You can select and copy the link manually.')
+    }
+  }
+
   async function startEditFromList(pollId) {
     setIsLoadingDetail(true)
     setError('')
@@ -175,7 +251,13 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
           onBack={backToDashboard}
           onEdit={() => startEdit(selectedPoll)}
           onDelete={() => handleDeletePoll(selectedPoll)}
+          onPublish={handlePublishPoll}
+          onUnpublish={handleUnpublishPoll}
+          onCopyLink={handleCopyShareLink}
+          shareUrl={`${window.location.origin}/poll/${selectedPoll.id}`}
+          copyMessage={copyMessage}
           isDeleting={isDeleting}
+          isPublishing={isPublishing}
         />
       )
     }

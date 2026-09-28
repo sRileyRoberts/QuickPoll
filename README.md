@@ -10,6 +10,7 @@ This project is being built for Engineering Design 2 using AI-assisted developme
 - Vite
 - JavaScript
 - `@supabase/supabase-js`
+- `react-router-dom`
 - Supabase PostgreSQL
 - Supabase Auth
 - Netlify (planned deployment)
@@ -83,11 +84,14 @@ Do not commit real Supabase credentials or local `.env` files to the repository.
 - View poll details and ordered answer options
 - Edit draft poll text and answer options
 - Delete polls after confirmation
+- Publish and unpublish polls
+- Generate shareable public links for published polls
+- Open published polls without an account at `/poll/:pollId`
 
-Polls remain drafts and unpublished for now. Public sharing, public voting, and results are planned for later phases.
+Public poll pages are read-only in this phase. Voting and results are planned for later phases.
 
-Note: Phase 4 edits poll options by deleting and recreating option rows. This is acceptable before votes exist, but future phases may need to restrict option editing for published polls or polls that already have responses.
+Note: QuickPoll currently allows editing published polls because voting has not been implemented yet. Phase 4 edits poll options by deleting and recreating option rows. Future phases may need to restrict option editing for published polls or polls that already have responses.
 
 ## Development Status
 
-QuickPoll currently supports registration, login, logout, persistent Supabase Auth sessions, automatic profile creation, and authenticated poll CRUD. Public sharing, voting, results, and deployment will be added in later phases.
+QuickPoll currently supports registration, login, logout, persistent Supabase Auth sessions, automatic profile creation, authenticated poll CRUD, publishing, and read-only public poll links. Voting, results, and deployment will be added in later phases.

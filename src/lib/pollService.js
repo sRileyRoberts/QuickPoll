@@ -142,3 +142,59 @@ export async function deletePoll(pollId, userId) {
     throw error
   }
 }
+
+export async function publishPoll(pollId, userId) {
+  const { error } = await supabase
+    .from('polls')
+    .update({ is_published: true })
+    .eq('id', pollId)
+    .eq('owner_id', userId)
+
+  if (error) {
+    throw error
+  }
+}
+
+export async function unpublishPoll(pollId, userId) {
+  const { error } = await supabase
+    .from('polls')
+    .update({ is_published: false })
+    .eq('id', pollId)
+    .eq('owner_id', userId)
+
+  if (error) {
+    throw error
+  }
+}
+
+export async function fetchPublicPoll(pollId) {
+  const { data: poll, error: pollError } = await supabase
+    .from('polls')
+    .select('id, title, description, question, is_published, created_at')
+    .eq('id', pollId)
+    .eq('is_published', true)
+    .maybeSingle()
+
+  if (pollError) {
+    throw pollError
+  }
+
+  if (!poll) {
+    return null
+  }
+
+  const { data: options, error: optionsError } = await supabase
+    .from('poll_options')
+    .select('id, option_text, display_order')
+    .eq('poll_id', pollId)
+    .order('display_order', { ascending: true })
+
+  if (optionsError) {
+    throw optionsError
+  }
+
+  return {
+    ...poll,
+    options,
+  }
+}
