@@ -88,7 +88,7 @@ export async function createPoll(userId, values) {
   return poll.id
 }
 
-export async function updatePoll(pollId, userId, values) {
+export async function updatePoll(pollId, userId, values, { updateOptions = true } = {}) {
   const pollValues = normalizePollInput(values)
 
   const { error: pollError } = await supabase
@@ -105,8 +105,10 @@ export async function updatePoll(pollId, userId, values) {
     throw pollError
   }
 
-  // Phase 4 has no votes yet. Once polls can receive votes, option editing
-  // should be restricted or redesigned so existing votes are not lost.
+  if (!updateOptions) {
+    return
+  }
+
   const { error: deleteOptionsError } = await supabase
     .from('poll_options')
     .delete()
@@ -209,5 +211,41 @@ export async function submitVote(pollId, optionId) {
 
   if (error) {
     throw error
+  }
+}
+
+export async function fetchPollResults(pollId, userId) {
+  const poll = await getPollWithOptions(pollId, userId)
+
+  const { data: votes, error: votesError } = await supabase
+    .from('votes')
+    .select('option_id')
+    .eq('poll_id', pollId)
+
+  if (votesError) {
+    throw votesError
+  }
+
+  const totalVotes = votes.length
+  const voteCounts = votes.reduce((counts, vote) => {
+    counts[vote.option_id] = (counts[vote.option_id] || 0) + 1
+    return counts
+  }, {})
+
+  return {
+    totalVotes,
+    options: poll.options.map((option) => {
+      const voteCount = voteCounts[option.id] || 0
+      const percentage =
+        totalVotes === 0 ? 0 : Math.round((voteCount / totalVotes) * 100)
+
+      return {
+        id: option.id,
+        optionText: option.option_text,
+        displayOrder: option.display_order,
+        voteCount,
+        percentage,
+      }
+    }),
   }
 }

@@ -4,6 +4,7 @@ import PollForm from './PollForm'
 import {
   createPoll,
   deletePoll,
+  fetchPollResults,
   getPollWithOptions,
   getUserPolls,
   publishPoll,
@@ -32,7 +33,12 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
   const [isLoadingDetail, setIsLoadingDetail] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isPublishing, setIsPublishing] = useState(false)
+  const [isLoadingResults, setIsLoadingResults] = useState(false)
   const [copyMessage, setCopyMessage] = useState('')
+  const [results, setResults] = useState(null)
+  const [resultsError, setResultsError] = useState('')
+
+  const shouldLockOptions = Boolean(resultsError) || (results?.totalVotes || 0) > 0
 
   const loadPolls = useCallback(async () => {
     setIsLoadingPolls(true)
@@ -56,15 +62,36 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
     setIsLoadingDetail(true)
     setError('')
     setMessage('')
+    setResults(null)
+    setResultsError('')
 
     try {
       const poll = await getPollWithOptions(pollId, user.id)
       setSelectedPoll(poll)
       setView('detail')
+      await loadResults(pollId)
     } catch (detailError) {
       setError(detailError.message)
     } finally {
       setIsLoadingDetail(false)
+    }
+  }
+
+  async function loadResults(pollId) {
+    setIsLoadingResults(true)
+    setResultsError('')
+
+    try {
+      const pollResults = await fetchPollResults(pollId, user.id)
+      setResults(pollResults)
+      return pollResults
+    } catch (resultError) {
+      console.error('Result loading failed:', resultError)
+      setResults(null)
+      setResultsError('Results could not be loaded. Please try again.')
+      return null
+    } finally {
+      setIsLoadingResults(false)
     }
   }
 
@@ -76,10 +103,13 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
   }
 
   async function handleUpdatePoll(values) {
-    await updatePoll(selectedPoll.id, user.id, values)
+    await updatePoll(selectedPoll.id, user.id, values, {
+      updateOptions: !shouldLockOptions,
+    })
     await loadPolls()
     const refreshedPoll = await getPollWithOptions(selectedPoll.id, user.id)
     setSelectedPoll(refreshedPoll)
+    await loadResults(selectedPoll.id)
     setView('detail')
     setMessage('Poll updated successfully.')
   }
@@ -134,6 +164,7 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
       await publishPoll(selectedPoll.id, user.id)
       await loadPolls()
       await refreshSelectedPoll(selectedPoll.id)
+      await loadResults(selectedPoll.id)
       setMessage('Poll published successfully.')
     } catch (publishError) {
       setError(publishError.message)
@@ -156,6 +187,7 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
       await unpublishPoll(selectedPoll.id, user.id)
       await loadPolls()
       await refreshSelectedPoll(selectedPoll.id)
+      await loadResults(selectedPoll.id)
       setMessage('Poll unpublished successfully.')
     } catch (publishError) {
       setError(publishError.message)
@@ -194,6 +226,7 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
     try {
       const fullPoll = await getPollWithOptions(pollId, user.id)
       setSelectedPoll(fullPoll)
+      await loadResults(pollId)
       setView('edit')
     } catch (detailError) {
       setError(detailError.message)
@@ -204,6 +237,8 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
 
   function startCreate() {
     setSelectedPoll(null)
+    setResults(null)
+    setResultsError('')
     setMessage('')
     setError('')
     setView('create')
@@ -218,8 +253,22 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
 
   function backToDashboard() {
     setSelectedPoll(null)
+    setResults(null)
+    setResultsError('')
     setView('dashboard')
     setError('')
+  }
+
+  async function handleRefreshResults() {
+    if (!selectedPoll) {
+      return
+    }
+
+    const refreshedResults = await loadResults(selectedPoll.id)
+
+    if (refreshedResults) {
+      setMessage('Results refreshed.')
+    }
   }
 
   function renderWorkspace() {
@@ -238,6 +287,12 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
         <PollForm
           mode="edit"
           poll={selectedPoll}
+          lockOptions={shouldLockOptions}
+          optionLockReason={
+            resultsError
+              ? 'Answer options are locked because results could not be loaded. You can still edit the title, description, and question.'
+              : 'Answer options are locked because this poll already has votes. You can still edit the title, description, and question.'
+          }
           onCancel={() => setView('detail')}
           onSubmit={handleUpdatePoll}
         />
@@ -256,8 +311,12 @@ function Dashboard({ user, profile, profileError, onLogout, logoutError, isLoggi
           onCopyLink={handleCopyShareLink}
           shareUrl={`${window.location.origin}/poll/${selectedPoll.id}`}
           copyMessage={copyMessage}
+          results={results}
+          resultsError={resultsError}
+          onRefreshResults={handleRefreshResults}
           isDeleting={isDeleting}
           isPublishing={isPublishing}
+          isLoadingResults={isLoadingResults}
         />
       )
     }

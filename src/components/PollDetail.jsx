@@ -12,8 +12,12 @@ function PollDetail({
   onCopyLink,
   shareUrl,
   copyMessage,
+  results,
+  resultsError,
+  onRefreshResults,
   isDeleting,
   isPublishing,
+  isLoadingResults,
 }) {
   return (
     <section className="workspace-card" aria-labelledby="poll-detail-title">
@@ -97,9 +101,53 @@ function PollDetail({
         )}
       </div>
 
-      <p className="placeholder-message">
-        Results will be available in a future phase.
-      </p>
+      <div className="results-panel" aria-labelledby="results-title">
+        <div className="results-header">
+          <div>
+            <span>Owner Results</span>
+            <h3 id="results-title">Total Votes: {results?.totalVotes ?? 0}</h3>
+          </div>
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={onRefreshResults}
+            disabled={isLoadingResults}
+          >
+            {isLoadingResults ? 'Refreshing...' : 'Refresh Results'}
+          </button>
+        </div>
+
+        {resultsError && <p className="form-message error">{resultsError}</p>}
+
+        {!resultsError && !results && isLoadingResults && (
+          <p className="placeholder-message">Loading results...</p>
+        )}
+
+        {!resultsError && results?.totalVotes === 0 && (
+          <p className="placeholder-message">No votes have been submitted yet.</p>
+        )}
+
+        {!resultsError && results && (
+          <div className="result-list">
+            {results.options.map((option) => (
+              <div className="result-row" key={option.id}>
+                <div className="result-row-header">
+                  <span>{option.optionText}</span>
+                  <strong>
+                    {option.voteCount} {option.voteCount === 1 ? 'vote' : 'votes'} - {option.percentage}%
+                  </strong>
+                </div>
+                <div className="result-bar" aria-hidden="true">
+                  <div
+                    className="result-bar-fill"
+                    style={{ width: `${option.percentage}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="form-actions">
         <button type="button" className="secondary-button" onClick={onEdit}>

@@ -20,7 +20,14 @@ function toFormValues(poll) {
   }
 }
 
-function PollForm({ mode, poll, onCancel, onSubmit }) {
+function PollForm({
+  mode,
+  poll,
+  lockOptions = false,
+  optionLockReason = 'Answer options are locked. You can still edit the title, description, and question.',
+  onCancel,
+  onSubmit,
+}) {
   const [values, setValues] = useState(() => toFormValues(poll))
   const [error, setError] = useState('')
   const [isSaving, setIsSaving] = useState(false)
@@ -79,7 +86,7 @@ function PollForm({ mode, poll, onCancel, onSubmit }) {
       return 'Polls can have no more than six answer options.'
     }
 
-    if (values.options.some((option) => !option.trim())) {
+    if (!lockOptions && values.options.some((option) => !option.trim())) {
       return 'Remove blank options or fill them in before saving.'
     }
 
@@ -165,6 +172,12 @@ function PollForm({ mode, poll, onCancel, onSubmit }) {
             <span>{values.options.length}/6</span>
           </div>
 
+          {lockOptions && (
+            <p className="form-message error">
+              {optionLockReason}
+            </p>
+          )}
+
           {values.options.map((option, index) => (
             <div className="option-row" key={`option-${index + 1}`}>
               <label>
@@ -173,7 +186,7 @@ function PollForm({ mode, poll, onCancel, onSubmit }) {
                   type="text"
                   value={option}
                   onChange={(event) => updateOption(index, event.target.value)}
-                  disabled={isSaving}
+                  disabled={isSaving || lockOptions}
                   required
                 />
               </label>
@@ -181,7 +194,7 @@ function PollForm({ mode, poll, onCancel, onSubmit }) {
                 type="button"
                 className="icon-button"
                 onClick={() => removeOption(index)}
-                disabled={isSaving || values.options.length <= 2}
+                disabled={isSaving || lockOptions || values.options.length <= 2}
                 aria-label={`Remove option ${index + 1}`}
               >
                 -
@@ -193,7 +206,7 @@ function PollForm({ mode, poll, onCancel, onSubmit }) {
             type="button"
             className="secondary-button"
             onClick={addOption}
-            disabled={isSaving || values.options.length >= 6}
+            disabled={isSaving || lockOptions || values.options.length >= 6}
           >
             Add Option
           </button>
