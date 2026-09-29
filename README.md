@@ -121,7 +121,7 @@ Core functionality is complete for the class project:
 ## Demo
 
 Deployed App:  
-[ADD DEPLOYED URL]
+(https://quickpollv1.netlify.app)
 
 Demo Video:  
 [ADD YOUTUBE DEMO URL]
